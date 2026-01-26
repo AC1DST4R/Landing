@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>AC1DST4R • GitHub</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
@@ -14,53 +14,50 @@
 
 <main class="container">
 
-  <!-- PROFILE -->
-  <section class="profile">
-    <img id="avatar">
-    <h1 id="name"></h1>
-    <h2 id="username"></h2>
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar">
+    <img id="avatar" class="avatar">
+    <h2 id="name"></h2>
+    <p id="username"></p>
     <p id="bio"></p>
 
     <div class="stats">
       <span id="followers"></span>
       <span id="following"></span>
-      <span id="repos"></span>
     </div>
 
     <a id="githubLink" class="btn" target="_blank">View on GitHub</a>
-  </section>
+  </aside>
 
-  <!-- TABS -->
-  <nav class="tabs">
-    <button class="tab active" data-tab="repos">Repositories</button>
-    <button class="tab" data-tab="pages">Pages</button>
-    <button class="tab" data-tab="activity">Activity</button>
-  </nav>
+  <!-- MAIN CONTENT -->
+  <section class="main">
 
-  <!-- TAB CONTENT -->
-  <section class="tab-content">
+    <!-- TABS -->
+    <nav class="tabs">
+      <button class="tab active" data-tab="popular">Popular</button>
+      <button class="tab" data-tab="all">All Repositories</button>
+    </nav>
 
-    <!-- REPOS -->
-    <div id="repos" class="panel active">
-      <input id="search" placeholder="Find a repository…">
+    <!-- PANELS -->
+    <div id="popular" class="panel active">
+      <div id="pinnedList"></div>
+    </div>
+
+    <div id="all" class="panel">
+      <input id="search" placeholder="Find a repository…" />
       <div id="repoList"></div>
     </div>
 
-    <!-- PAGES -->
-    <div id="pages" class="panel">
-      <div id="pagesList"></div>
-    </div>
-
-    <!-- ACTIVITY -->
-    <div id="activity" class="panel">
-      <h3>Recent Activity</h3>
-      <div id="activityList"></div>
-
-      <h3>Contribution Graph</h3>
-      <img id="contribGraph">
-    </div>
-
   </section>
+
+  <!-- RIGHT ACTIVITY -->
+  <aside class="activity">
+    <h3>Recent Activity</h3>
+    <div id="activityList"></div>
+
+    <h3>Contributions</h3>
+    <img id="contribGraph">
+  </aside>
 
 </main>
 
