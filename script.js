@@ -1,7 +1,13 @@
 const username = "AC1DST4R";
 
+/* MANUAL PINNED REPOS (EDIT THIS) */
+const pinnedRepos = [
+  "repo-name-1",
+  "repo-name-2"
+];
+
 const $ = id => document.getElementById(id);
-let repos = [];
+let allRepos = [];
 
 /* PROFILE */
 async function loadProfile() {
@@ -14,49 +20,46 @@ async function loadProfile() {
   $("bio").textContent = u.bio || "";
   $("followers").textContent = `${u.followers} followers`;
   $("following").textContent = `${u.following} following`;
-  $("repos").textContent = `${u.public_repos} repos`;
   $("githubLink").href = u.html_url;
 
-  $("contribGraph").src =
-    `https://ghchart.rshah.org/${u.login}`;
+  $("contribGraph").src = `https://ghchart.rshah.org/${u.login}`;
 }
 
 /* REPOS */
 async function loadRepos() {
   const r = await fetch(`https://api.github.com/users/${username}/repos?per_page=100`);
-  repos = await r.json();
-  renderRepos(repos);
-  renderPages();
+  allRepos = await r.json();
+
+  renderPinned();
+  renderRepos(allRepos);
+}
+
+function repoCard(repo) {
+  return `
+    <div class="repo">
+      <a href="${repo.html_url}" target="_blank">${repo.name}</a>
+      <div class="desc">${repo.description || ""}</div>
+      ⭐ ${repo.stargazers_count}
+      ${repo.has_pages ? `<div>📄 <a href="https://${username}.github.io/${repo.name}/" target="_blank">Live</a></div>` : ""}
+    </div>`;
+}
+
+function renderPinned() {
+  $("pinnedList").innerHTML = "";
+  allRepos
+    .filter(r => pinnedRepos.includes(r.name))
+    .forEach(r => $("pinnedList").innerHTML += repoCard(r));
 }
 
 function renderRepos(list) {
   $("repoList").innerHTML = "";
-  list.forEach(repo => {
-    $("repoList").innerHTML += `
-      <div class="repo">
-        <a href="${repo.html_url}" target="_blank">${repo.name}</a>
-        <div class="desc">${repo.description || ""}</div>
-        <div>⭐ ${repo.stargazers_count}</div>
-        ${repo.has_pages ? `<div class="pages">📄 <a href="https://${username}.github.io/${repo.name}/" target="_blank">Live Page</a></div>` : ""}
-      </div>`;
-  });
+  list.forEach(r => $("repoList").innerHTML += repoCard(r));
 }
 
 $("search").addEventListener("input", e => {
   const q = e.target.value.toLowerCase();
-  renderRepos(repos.filter(r => r.name.toLowerCase().includes(q)));
+  renderRepos(allRepos.filter(r => r.name.toLowerCase().includes(q)));
 });
-
-/* PAGES */
-function renderPages() {
-  $("pagesList").innerHTML = "";
-  repos.filter(r => r.has_pages).forEach(repo => {
-    $("pagesList").innerHTML += `
-      <div class="repo">
-        <a href="https://${username}.github.io/${repo.name}/" target="_blank">${repo.name}</a>
-      </div>`;
-  });
-}
 
 /* ACTIVITY */
 async function loadActivity() {
@@ -64,10 +67,10 @@ async function loadActivity() {
   const events = await r.json();
 
   $("activityList").innerHTML = "";
-  events.slice(0, 10).forEach(e => {
+  events.slice(0, 8).forEach(e => {
     $("activityList").innerHTML += `
-      <div class="activity">
-        ${e.type.replace("Event", "")} • ${new Date(e.created_at).toLocaleString()}
+      <div class="activity-item">
+        ${e.type.replace("Event","")} • ${new Date(e.created_at).toLocaleDateString()}
       </div>`;
   });
 }
@@ -77,7 +80,6 @@ document.querySelectorAll(".tab").forEach(tab => {
   tab.onclick = () => {
     document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
     document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
-
     tab.classList.add("active");
     $(tab.dataset.tab).classList.add("active");
   };
