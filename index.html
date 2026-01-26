@@ -8,38 +8,62 @@
 </head>
 <body>
 
-  <header class="topbar">
-    <span class="logo">GitHub</span>
-  </header>
+<header class="topbar">
+  <span class="logo">GitHub</span>
+</header>
 
-  <main class="container">
+<main class="container">
 
-    <section class="profile">
-      <img id="avatar" alt="Profile picture">
-      <h1 id="name"></h1>
-      <h2 id="username"></h2>
-      <p id="bio"></p>
+  <!-- PROFILE -->
+  <section class="profile">
+    <img id="avatar">
+    <h1 id="name"></h1>
+    <h2 id="username"></h2>
+    <p id="bio"></p>
 
-      <div class="stats">
-        <span id="followers"></span>
-        <span id="following"></span>
-        <span id="repos"></span>
-      </div>
+    <div class="stats">
+      <span id="followers"></span>
+      <span id="following"></span>
+      <span id="repos"></span>
+    </div>
 
-      <a id="githubLink" class="btn" target="_blank">View on GitHub</a>
-    </section>
+    <a id="githubLink" class="btn" target="_blank">View on GitHub</a>
+  </section>
 
-    <section class="repo-section">
-      <div class="repo-header">
-        <h3>Repositories</h3>
-        <input type="text" id="search" placeholder="Find a repository…">
-      </div>
+  <!-- TABS -->
+  <nav class="tabs">
+    <button class="tab active" data-tab="repos">Repositories</button>
+    <button class="tab" data-tab="pages">Pages</button>
+    <button class="tab" data-tab="activity">Activity</button>
+  </nav>
 
-      <div id="repoList">Loading repositories…</div>
-    </section>
+  <!-- TAB CONTENT -->
+  <section class="tab-content">
 
-  </main>
+    <!-- REPOS -->
+    <div id="repos" class="panel active">
+      <input id="search" placeholder="Find a repository…">
+      <div id="repoList"></div>
+    </div>
 
-  <script src="script.js"></script>
+    <!-- PAGES -->
+    <div id="pages" class="panel">
+      <div id="pagesList"></div>
+    </div>
+
+    <!-- ACTIVITY -->
+    <div id="activity" class="panel">
+      <h3>Recent Activity</h3>
+      <div id="activityList"></div>
+
+      <h3>Contribution Graph</h3>
+      <img id="contribGraph">
+    </div>
+
+  </section>
+
+</main>
+
+<script src="script.js"></script>
 </body>
 </html>
