@@ -1,70 +1,88 @@
 const username = "AC1DST4R";
 
-const avatar = document.getElementById("avatar");
-const nameEl = document.getElementById("name");
-const userEl = document.getElementById("username");
-const bioEl = document.getElementById("bio");
-const followersEl = document.getElementById("followers");
-const followingEl = document.getElementById("following");
-const reposEl = document.getElementById("repos");
-const repoList = document.getElementById("repoList");
-const search = document.getElementById("search");
-const githubLink = document.getElementById("githubLink");
+const $ = id => document.getElementById(id);
+let repos = [];
 
-let allRepos = [];
-
+/* PROFILE */
 async function loadProfile() {
-  const res = await fetch(`https://api.github.com/users/${username}`);
-  const user = await res.json();
+  const r = await fetch(`https://api.github.com/users/${username}`);
+  const u = await r.json();
 
-  avatar.src = user.avatar_url;
-  nameEl.textContent = user.name || username;
-  userEl.textContent = "@" + user.login;
-  bioEl.textContent = user.bio || "";
-  followersEl.textContent = `${user.followers} followers`;
-  followingEl.textContent = `${user.following} following`;
-  reposEl.textContent = `${user.public_repos} repos`;
-  githubLink.href = user.html_url;
+  $("avatar").src = u.avatar_url;
+  $("name").textContent = u.name || u.login;
+  $("username").textContent = "@" + u.login;
+  $("bio").textContent = u.bio || "";
+  $("followers").textContent = `${u.followers} followers`;
+  $("following").textContent = `${u.following} following`;
+  $("repos").textContent = `${u.public_repos} repos`;
+  $("githubLink").href = u.html_url;
+
+  $("contribGraph").src =
+    `https://ghchart.rshah.org/${u.login}`;
 }
 
-function renderRepos(repos) {
-  repoList.innerHTML = "";
+/* REPOS */
+async function loadRepos() {
+  const r = await fetch(`https://api.github.com/users/${username}/repos?per_page=100`);
+  repos = await r.json();
+  renderRepos(repos);
+  renderPages();
+}
 
-  repos.forEach(repo => {
-    const div = document.createElement("div");
-    div.className = "repo";
-
-    const pagesUrl = `https://${username}.github.io/${repo.name}/`;
-
-    div.innerHTML = `
-      <a href="${repo.html_url}" target="_blank">${repo.name}</a>
-      <div class="desc">${repo.description || ""}</div>
-      <div class="meta">⭐ ${repo.stargazers_count} • 🍴 ${repo.forks_count}</div>
-      ${
-        repo.has_pages
-          ? `<div class="pages">📄 <a href="${pagesUrl}" target="_blank">Live Page</a></div>`
-          : ""
-      }
-    `;
-
-    repoList.appendChild(div);
+function renderRepos(list) {
+  $("repoList").innerHTML = "";
+  list.forEach(repo => {
+    $("repoList").innerHTML += `
+      <div class="repo">
+        <a href="${repo.html_url}" target="_blank">${repo.name}</a>
+        <div class="desc">${repo.description || ""}</div>
+        <div>⭐ ${repo.stargazers_count}</div>
+        ${repo.has_pages ? `<div class="pages">📄 <a href="https://${username}.github.io/${repo.name}/" target="_blank">Live Page</a></div>` : ""}
+      </div>`;
   });
 }
 
-async function loadRepos() {
-  const res = await fetch(`https://api.github.com/users/${username}/repos?per_page=100`);
-  allRepos = await res.json();
+$("search").addEventListener("input", e => {
+  const q = e.target.value.toLowerCase();
+  renderRepos(repos.filter(r => r.name.toLowerCase().includes(q)));
+});
 
-  allRepos.sort((a, b) => b.stargazers_count - a.stargazers_count);
-  renderRepos(allRepos);
+/* PAGES */
+function renderPages() {
+  $("pagesList").innerHTML = "";
+  repos.filter(r => r.has_pages).forEach(repo => {
+    $("pagesList").innerHTML += `
+      <div class="repo">
+        <a href="https://${username}.github.io/${repo.name}/" target="_blank">${repo.name}</a>
+      </div>`;
+  });
 }
 
-search.addEventListener("input", () => {
-  const value = search.value.toLowerCase();
-  renderRepos(
-    allRepos.filter(r => r.name.toLowerCase().includes(value))
-  );
+/* ACTIVITY */
+async function loadActivity() {
+  const r = await fetch(`https://api.github.com/users/${username}/events`);
+  const events = await r.json();
+
+  $("activityList").innerHTML = "";
+  events.slice(0, 10).forEach(e => {
+    $("activityList").innerHTML += `
+      <div class="activity">
+        ${e.type.replace("Event", "")} • ${new Date(e.created_at).toLocaleString()}
+      </div>`;
+  });
+}
+
+/* TABS */
+document.querySelectorAll(".tab").forEach(tab => {
+  tab.onclick = () => {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+
+    tab.classList.add("active");
+    $(tab.dataset.tab).classList.add("active");
+  };
 });
 
 loadProfile();
 loadRepos();
+loadActivity();
